@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Three cells by two: the widget is a set of controls, not a panel, and it holds nothing that would
+  reward more room. targetCell* is the size a new widget is placed at, which is enough for the
+  labelled layout.
+
+  minWidth and minHeight are the compact layout's own measurements — 184dp is three 48dp targets,
+  two 8dp gutters and the background's padding; 68dp is one 48dp row inside that padding — because
+  they are the floor the widget must keep working at, not the size it prefers. Declaring the taller
+  layout's height here would not have helped in any case: a launcher does not resize a widget Abu
+  already placed when the provider's numbers change, so the case that matters is handled by sending
+  both layouts and letting the launcher pick (see MiraWidgetProvider).
+
+  resizeMode carries vertical as well as horizontal. Horizontal alone left Abu unable to drag the
+  widget taller, which on an instance placed before the capture buttons existed was the only way
+  back to the labelled form short of deleting the widget and adding it again.
+
+  updatePeriodMillis is 0 because the widget draws three fixed controls — a periodic wake-up would
+  cost battery to redraw the same thing.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/mira_widget_description"
+    android:initialLayout="@layout/widget_mira"
+    android:minHeight="68dp"
+    android:minWidth="184dp"
+    android:previewLayout="@layout/widget_mira"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="2"
+    android:targetCellWidth="3"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

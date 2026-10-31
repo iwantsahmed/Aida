@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The note mark at widget size. One weight, no fill, nothing to parcel as a bitmap. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M6,4 L18,4 L18,20 L6,20 Z"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="1.8"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M9.5,9.5 L14.5,9.5"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M9.5,14.5 L14.5,14.5"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="1.8"
+        android:strokeLineCap="round" />
+</vector>

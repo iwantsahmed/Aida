@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The palette tokens the widgets need as platform resources.
+
+  A RemoteViews layout is inflated in the launcher's process and cannot read MiraTheme, so the
+  values are mirrored here from MiraPalette rather than invented. Keep them identical to
+  core/design/MiraColors.kt — a widget that is a slightly different black, or the old warm ivory
+  text, is worse than one that is obviously a different app. (mira_obsidian and mira_accent already
+  live in colors.xml.)
+-->
+<resources>
+    <color name="mira_platinum">#F1F3F7</color>
+    <color name="mira_muted">#878B93</color>
+    <color name="mira_carbon">#101013</color>
+    <color name="mira_hairline">#12F1F3F7</color>
+</resources>

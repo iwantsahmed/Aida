@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Applied only while the window is being created; Compose supplies everything after that. -->
+    <style name="Theme.Mira" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/mira_obsidian</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:enforceStatusBarContrast">false</item>
+    </style>
+
+    <style name="Theme.Mira.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/mira_obsidian</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_mira_splash</item>
+        <item name="postSplashScreenTheme">@style/Theme.Mira</item>
+    </style>
+</resources>

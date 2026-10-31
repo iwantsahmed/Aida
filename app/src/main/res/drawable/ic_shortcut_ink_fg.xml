@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A stylus, nib to the lower left, in the same one-weight outline as the other shortcut marks. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M60,34 L74,48 L50,72 L36,75 L39,61 Z"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="5"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M54,40 L68,54"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="5"
+        android:strokeLineCap="round" />
+</vector>

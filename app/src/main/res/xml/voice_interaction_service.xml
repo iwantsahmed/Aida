@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  What Android reads before it will offer Mira in the assistant list.
+
+  android:recognitionService is REQUIRED and must name a RecognitionService in this package. A
+  missing or wrong one fails silently: Mira simply never appears as a choice, with nothing in
+  logcat to say why. MiraRecognitionService is real — it delegates to the platform's on-device
+  engine — rather than a stub standing in for this attribute.
+
+  The class names are fully qualified and carry no applicationId suffix. A leading dot is expanded
+  only in AndroidManifest android:name attributes, never in a resource value, and the debug build
+  installs as com.rayluxeo.aida.debug while these classes stay in com.rayluxeo.aida.
+
+  supportsLaunchVoiceAssistFromKeyguard is false on purpose: Mira's answers come from Abu's own
+  records, and none of them belong on a locked screen.
+-->
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:sessionService="com.rayluxeo.aida.assistant.MiraVoiceInteractionSessionService"
+    android:recognitionService="com.rayluxeo.aida.assistant.MiraRecognitionService"
+    android:supportsAssist="true"
+    android:supportsLaunchVoiceAssistFromKeyguard="false"
+    android:supportsLocalInteraction="false" />

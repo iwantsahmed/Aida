@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Required by RecognitionService.SERVICE_META_DATA ("android.speech"). android:settingsActivity is
+  deliberately absent: Mira has no separate recognizer settings screen, and pointing it at the main
+  activity would be a control that opens somewhere unrelated.
+-->
+<recognition-service xmlns:android="http://schemas.android.com/apk/res/android" />

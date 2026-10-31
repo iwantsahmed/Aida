@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The same face, drawn larger for the splash screen. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:translateX="8" android:translateY="10" android:scaleX="0.46" android:scaleY="0.46">
+        <path android:pathData="M164 99 C180 99 182 117 166 117 C161 112 161 104 164 99 Z" android:fillColor="@color/mira_accent" />
+        <path android:pathData="M100 38 C150 38 168 74 168 108 C168 152 140 176 100 176 C58 176 34 150 34 110 C34 74 52 38 100 38 Z" android:fillColor="@color/mira_accent" />
+        <path android:pathData="M78 44 C70 30 72 16 84 14 C96 12 100 24 93 34 C90 39 85 42 78 44 Z" android:fillColor="@color/mira_accent" />
+        <path android:pathData="M52 105 C38 104 34 106 30 109" android:strokeColor="#F4F1EA" android:strokeWidth="11" android:strokeLineCap="round" />
+        <path android:pathData="M74.5 95.5 a7.5 7.5 0 0 1 15 0 L89.5 112.5 a7.5 7.5 0 0 1 -15 0 Z" android:fillColor="#F4F1EA" />
+        <path android:pathData="M125.5 97.5 a7.5 7.5 0 0 1 15 0 L140.5 114.5 a7.5 7.5 0 0 1 -15 0 Z" android:fillColor="#F4F1EA" />
+        <path android:pathData="M52 104 a30 30 0 1 0 60 0 a30 30 0 1 0 -60 0" android:strokeColor="#F4F1EA" android:strokeWidth="11" />
+        <path android:pathData="M105 106 a28 28 0 1 0 56 0 a28 28 0 1 0 -56 0" android:strokeColor="#F4F1EA" android:strokeWidth="11" />
+        <path android:pathData="M112 102 C107.5 92 107.5 94 107 104" android:strokeColor="#F4F1EA" android:strokeWidth="11" android:strokeLineCap="round" />
+    </group>
+</vector>

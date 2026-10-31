@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Expose cacheDir so generated invoice PDFs and OTA update APKs can be shared securely with external apps / package installer -->
+    <cache-path name="invoice_cache" path="." />
+    <cache-path name="updates" path="updates" />
+    <external-cache-path name="ext_updates" path="updates" />
+</paths>

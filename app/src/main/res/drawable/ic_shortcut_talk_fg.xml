@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Five bars, the same shape MiraWaveform draws while she is listening. Sized inside the adaptive
+  safe zone: the furthest point sits about 31 units from the centre of the 108 viewport, so no
+  launcher mask can clip it.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:pathData="M36,46 L36,62"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M45,38 L45,70"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M54,32 L54,76"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M63,38 L63,70"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M72,46 L72,62"
+        android:strokeColor="@color/mira_accent"
+        android:strokeWidth="6"
+        android:strokeLineCap="round" />
+</vector>

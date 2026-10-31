@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Listening. Also requested at runtime the first time Abu taps the microphone. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Vault unlock via the platform BiometricPrompt. -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
+    <!--
+      The phone's own calendars. Read to answer what is scheduled, write to add an event Abu
+      dictates. The system provider stays the source of truth; Mira keeps only a link row.
+    -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+
+    <!--
+      Exact alarms and background wakeup.
+      USE_EXACT_ALARM: Granted by default on Android 14+ for clock, timer and reminder apps.
+      SCHEDULE_EXACT_ALARM: Maintained for Android 12-13 backward compatibility.
+      WAKE_LOCK: Keeps CPU awake while goAsync() processes notifications in the background.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!--
+      Place reminders, and nothing else. Every other kind of reminder works with location switched
+      off, the permission refused and no provider present — Mira asks for these only at the moment
+      Abu sets a reminder for a place, never at startup and never during onboarding.
+
+      ACCESS_BACKGROUND_LOCATION is separate and is what makes a place reminder actually a place
+      reminder: without it the alert only arrives while Mira is open, which is no use to a man who
+      wanted to be told when he reached the office.
+
+      uses-feature required="false" so the app still installs on a device with no location hardware.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+
+    <!-- Only used when Abu explicitly enables Gemini and supplies a key. Mira works without it. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Over-The-Air (OTA) updates via GitHub Releases -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!--
+      Package visibility. Without these, getEngines() silently returns a truncated list and Voice
+      Setup would misreport what the device actually has installed. QUERY_ALL_PACKAGES is never used.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+
+        <!--
+          The assistant role. Without the first entry Mira cannot read the label of whichever app
+          holds the role and the setup screen would show a raw package name; without the rest,
+          resolveActivity() answers "nothing" for the system screens and Mira would wrongly tell
+          Abu this phone has nowhere to change the assistant.
+        -->
+        <intent>
+            <action android:name="android.service.voice.VoiceInteractionService" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.VOICE_INPUT_SETTINGS" />
+        </intent>
+        <intent>
+            <action android:name="android.settings.MANAGE_DEFAULT_APPS_SETTINGS" />
+        </intent>
+        <!-- The AOSP assistant screen is addressed by component, so the package itself has to be
+             visible for resolveActivity() to find it at all. -->
+        <package android:name="com.android.settings" />
+
+        <!--
+          Keyphrase enrolment, so the hotword detector can ask whether this phone has SoundTrigger
+          support at all. Without it the query comes back empty under package-visibility filtering
+          and Mira would report "no keyphrase hardware" on a phone that has it.
+        -->
+        <intent>
+            <action android:name="com.android.intent.action.MANAGE_VOICE_KEYPHRASES" />
+        </intent>
+
+        <!--
+          The launchable apps, for the "launch an app" automation action's picker. Scoped to apps
+          with a launcher entry — deliberately NOT QUERY_ALL_PACKAGES, which AGENTS.md §7.8 forbids.
+        -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".MiraApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Mira">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Mira.Starting"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Mira as the system assistant. Android binds this for as long as she holds the role, so
+          the class is deliberately empty: nothing here may listen, hold the microphone or open the
+          database. BIND_VOICE_INTERACTION is signature|privileged so only the system can bind it,
+          but android:exported must still be true because the binder is outside the app.
+
+          NONE of the assistant services carry android:process. AOSP's sample puts them in
+          ":interactor"; Mira must not, because a second process gets its own Hilt
+          SingletonComponent and its own DataStore over the same file, which is not multi-process
+          safe and has already failed in this project once.
+        -->
+        <service
+            android:name=".assistant.MiraVoiceInteractionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION">
+            <intent-filter>
+                <action android:name="android.service.voice.VoiceInteractionService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.voice_interaction"
+                android:resource="@xml/voice_interaction_service" />
+        </service>
+
+        <!-- One session per invocation. Named by android:sessionService, so it needs no filter. -->
+        <service
+            android:name=".assistant.MiraVoiceInteractionSessionService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VOICE_INTERACTION" />
+
+        <!--
+          Android will not offer Mira in the assistant list unless the voice-interaction XML names
+          a RecognitionService in this package — android:recognitionService is required and a
+          missing one fails silently. So this is not optional, and it is a real recognizer rather
+          than a stub: every callback delegates to the platform's on-device engine.
+        -->
+        <service
+            android:name=".assistant.MiraRecognitionService"
+            android:exported="true"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.speech.RecognitionService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.speech"
+                android:resource="@xml/recognition_service" />
+        </service>
+
+        <!--
+          "Ask Mira": the share sheet and the text-selection toolbar.
+
+          Its own task affinity and no recents entry, because a share is a transient sheet over
+          whatever Abu was doing — it must not join Mira's main task, and it must not leave a
+          second Mira card in the app switcher.
+        -->
+        <activity
+            android:name=".assistant.share.ShareToMiraActivity"
+            android:exported="true"
+            android:excludeFromRecents="true"
+            android:label="@string/mira_share_label"
+            android:taskAffinity=""
+            android:theme="@style/Theme.Mira"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="image/*" />
+            </intent-filter>
+            <!--
+              An explicit document list rather than application/*, because that family is mostly
+              archives and installers and Mira has nothing to say about either.
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+                <data android:mimeType="application/pdf" />
+                <data android:mimeType="application/rtf" />
+                <data android:mimeType="application/msword" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+                <data android:mimeType="application/vnd.ms-excel" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                <data android:mimeType="application/vnd.ms-powerpoint" />
+                <data android:mimeType="application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+                <data android:mimeType="application/vnd.oasis.opendocument.text" />
+                <data android:mimeType="application/vnd.oasis.opendocument.spreadsheet" />
+                <data android:mimeType="application/vnd.oasis.opendocument.presentation" />
+            </intent-filter>
+            <!-- The text-selection toolbar, which is the most useful of these in practice. -->
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <!-- Mira in the Quick Settings shade. -->
+        <service
+            android:name=".assistant.tile.MiraTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_mira_tile"
+            android:label="@string/mira_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- APPWIDGET_UPDATE is a system broadcast, so this receiver must be exported. -->
+        <receiver
+            android:name=".assistant.widget.MiraWidgetProvider"
+            android:exported="true"
+            android:label="@string/mira_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/mira_widget_info" />
+        </receiver>
+
+        <!-- The live "Mira — Today" glance. APPWIDGET_UPDATE is a system broadcast, so exported. -->
+        <receiver
+            android:name=".assistant.widget.MiraGlanceWidgetProvider"
+            android:exported="true"
+            android:label="@string/mira_glance_widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/mira_glance_widget_info" />
+        </receiver>
+
+        <!-- Named explicitly by the alarm PendingIntent, so nothing outside Mira may trigger it. -->
+        <receiver
+            android:name=".data.scheduler.ReminderReceiver"
+            android:exported="false" />
+
+        <!-- Time-based automation alarms. Like the reminder receiver, it is named explicitly by its
+             PendingIntent, so nothing outside Mira can trigger it. -->
+        <receiver
+            android:name=".data.automation.AutomationAlarmReceiver"
+            android:exported="false" />
+
+        <!--
+          WorkManager's own startup initializer is removed on purpose. MiraApplication supplies the
+          configuration through Configuration.Provider so that Hilt's worker factory is in place;
+          letting androidx.startup initialise first would install the default factory, which builds
+          a worker by calling a no-argument constructor it does not have.
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+
+        <!-- FileProvider for sharing invoice PDFs with external apps (email, WhatsApp, chooser) -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- The alarm clock. setAlarmClock is not deferred by the OS and shows in the status bar. -->
+        <receiver
+            android:name=".data.scheduler.AlarmReceiver"
+            android:exported="false" />
+
+        <!-- One countdown ending. Several may be armed at once, each on its own request code. -->
+        <receiver
+            android:name=".data.scheduler.TimerReceiver"
+            android:exported="false" />
+
+        <!--
+          The buttons on a notification. A broadcast rather than an activity, so snoozing from the
+          shade snoozes and dismisses without dragging the whole app open.
+        -->
+        <receiver
+            android:name=".data.scheduler.NotificationActionReceiver"
+            android:exported="false" />
+
+        <!--
+          Abu arriving somewhere. The PendingIntent is handed to LocationManager.addProximityAlert,
+          which is the platform's own primitive — no Play Services anywhere in this app.
+        -->
+        <receiver
+            android:name=".data.scheduler.PlaceReceiver"
+            android:exported="false" />
+
+        <!-- Arrival at a place a rule watches, on the same proximity-alert primitive. -->
+        <receiver
+            android:name=".data.automation.AutomationPlaceReceiver"
+            android:exported="false" />
+
+        <!--
+          The Salah alarms: a prayer's time, the after-prayer check-in, the Tahajjud night window,
+          and the daily rollover that re-arms the next day. Named explicitly by the alarm
+          PendingIntents, so nothing outside Mira may trigger it.
+        -->
+        <receiver
+            android:name=".data.scheduler.PrayerReceiver"
+            android:exported="false" />
+
+        <!--
+          The Yes / Not yet / Remind me buttons on a prayer check-in. A broadcast rather than an
+          activity, so answering from the shade logs the prayer without dragging the app open.
+        -->
+        <receiver
+            android:name=".data.scheduler.PrayerActionReceiver"
+            android:exported="false" />
+
+        <!--
+          Named explicitly by the brief alarm's PendingIntent, so nothing outside Mira may trigger
+          it. Inexact by design — see BriefScheduler — so it needs no exact-alarm permission.
+        -->
+        <receiver
+            android:name=".data.scheduler.BriefReceiver"
+            android:exported="false" />
+
+        <!-- BOOT_COMPLETED is a system broadcast, so this one must be exported. -->
+        <receiver
+            android:name=".data.scheduler.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+          Power connected/disconnected fire automations keyed to the charger. These are PROTECTED
+          system broadcasts, so only the OS can send them even though the receiver is exported, and
+          they are among the few events Android still delivers to a manifest receiver while the app
+          is closed. No permission is required to receive them.
+        -->
+        <receiver
+            android:name=".data.automation.AutomationEventReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

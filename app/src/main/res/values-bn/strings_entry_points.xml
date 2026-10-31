@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Bengali half of the system surfaces. See values/strings_entry_points.xml. -->
+<resources>
+    <string name="mira_shortcut_talk_short">কথা বলুন</string>
+    <string name="mira_shortcut_talk_long">আইদার সাথে কথা বলুন</string>
+    <string name="mira_shortcut_task_short">নতুন কাজ</string>
+    <string name="mira_shortcut_task_long">একটি কাজ যোগ করুন</string>
+    <string name="mira_shortcut_note_short">নতুন নোট</string>
+    <string name="mira_shortcut_note_long">একটি নোট লিখুন</string>
+    <string name="mira_shortcut_ink_short">হাতে লিখুন</string>
+    <string name="mira_shortcut_ink_long">এস পেন দিয়ে নোট লিখুন</string>
+    <string name="mira_shortcut_invoice_short">নতুন ইনভয়েস</string>
+    <string name="mira_shortcut_invoice_long">নতুন ইনভয়েস তৈরি করুন</string>
+    <string name="mira_shortcut_scan_short">রসিদ স্ক্যান</string>
+    <string name="mira_shortcut_scan_long">রসিদ বা ডকুমেন্টস স্ক্যান করুন</string>
+    <string name="mira_shortcut_today_short">আজ</string>
+    <string name="mira_shortcut_today_long">আজকের সারসংক্ষেপ</string>
+
+    <string name="mira_tile_label">আইদা</string>
+    <string name="mira_tile_idle">কথা বলতে ট্যাপ করুন</string>
+    <string name="mira_tile_listening">শুনছি</string>
+    <string name="mira_tile_working">কাজ করছি</string>
+    <string name="mira_tile_speaking">বলছি</string>
+    <string name="mira_tile_no_microphone">মাইক্রোফোনের অনুমতি প্রয়োজন</string>
+
+    <string name="mira_widget_label">আইদা</string>
+    <string name="mira_widget_description">হোম স্ক্রিন থেকে আইদার সাথে কথা বলুন, বা একটি নোট শুরু করুন।</string>
+    <string name="mira_widget_action">আইদার সাথে কথা বলুন</string>
+    <string name="mira_glance_widget_label">আইদা — আজ</string>
+    <string name="mira_glance_widget_description">এক নজরে আপনার দিন: কাজ, টাকা আর পরবর্তী কী — হোম স্ক্রিনে।</string>
+    <string name="mira_widget_note">নতুন নোট</string>
+    <string name="mira_widget_ink">হাতে লিখুন</string>
+
+    <!-- The share sheet draws this while Mira is not running, so it is a resource rather
+         than a phrasebook string: the system picks the language, not Mira. -->
+    <string name="mira_share_label">আইদাকে বলুন</string>
+
+    <!-- The cross-app tier, drawn by the system on its own settings screens. -->
+    <string name="mira_accessibility_label">আইদার ক্রস-অ্যাপ অ্যাকশন</string>
+    <string name="mira_notification_listener_label">আইদার নোটিফিকেশন অটোমেশন</string>
+    <string name="mira_accessibility_description">আপনি যে সিস্টেম জেসচারগুলো অটোমেট করতে বলবেন সেগুলো আইদা করতে পারে — ব্যাক, হোম, রিসেন্টস। সে শুধু বোতাম চাপে, এর বেশি কিছু নয়: এই সার্ভিস আপনার স্ক্রিনে কী আছে তা পড়তে পারে না। আপনি চালু না করা পর্যন্ত বন্ধ থাকে, আর এটি ছাড়াও আইদা পুরোপুরি কাজ করে।</string>
+</resources>

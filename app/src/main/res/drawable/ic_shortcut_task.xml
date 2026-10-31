@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive rather than a bare glyph: a launcher draws a shortcut icon on its own light or dark
+  plate, and the accent on white is unreadable. Obsidian behind the mark makes it Mira's everywhere.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/mira_obsidian" />
+    <foreground android:drawable="@drawable/ic_shortcut_task_fg" />
+</adaptive-icon>

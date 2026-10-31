@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  "Mira — Today": the glance widget that binds live data. Sized like the Quick-Capture widget — three
+  cells by two, with both a compact and a full layout sent so the launcher picks by the placed size
+  (see MiraGlanceWidgetProvider / WidgetRefreshWorker).
+
+  updatePeriodMillis is 0 on purpose, the same reason the sweep is a Worker and not an alarm: the
+  platform minimum is 30 minutes AND it only fires while the screen is on, so it is both too slow and
+  unreliable for a figure that must be right. WidgetRefreshWorker drives the refresh instead — a
+  periodic ~30-minute tick plus an on-demand refresh when Abu leaves the app — so the glance is
+  current without the launcher waking us to redraw stale numbers.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/mira_glance_widget_description"
+    android:initialLayout="@layout/widget_glance"
+    android:minHeight="110dp"
+    android:minWidth="184dp"
+    android:previewLayout="@layout/widget_glance"
+    android:resizeMode="horizontal|vertical"
+    android:targetCellHeight="2"
+    android:targetCellWidth="3"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />
